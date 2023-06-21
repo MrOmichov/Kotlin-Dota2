@@ -1,16 +1,21 @@
 package com.example.screens.main.impl
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,10 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.impl.R
 import com.example.screens.main.api.data.Player
 import com.example.screens.main.impl.components.MainScreenContent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
+@ExperimentalFoundationApi
 @ExperimentalLayoutApi
 @ExperimentalMaterialApi
 @ExperimentalMaterial3Api
@@ -35,20 +42,22 @@ fun MainScreen(
     players: List<Player>,
     @DrawableRes
     placeHolderDrawableRes: Int = R.drawable.dota2_logo_icon,
-) {
-    val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
-    val lazyColumnState = rememberLazyListState()
+    coroutineScope: CoroutineScope,
+    scaffoldState: ScaffoldState,
+    lazyColumnState: LazyListState,
+    textFieldValue: MutableState<TextFieldValue>,
+    showDialog: Boolean,
+    ) {
+    val coroutineScope = coroutineScope
+    val scaffoldState = scaffoldState
+    val lazyColumnState = lazyColumnState
 
     val firstVisibleItemIndex by remember {
         derivedStateOf { lazyColumnState.firstVisibleItemIndex }
     }
 
-    val textFieldValue = remember {
-        mutableStateOf(
-            TextFieldValue("")
-        )
-    }
+    val textFieldValue = textFieldValue
+
     var isRefreshing by remember { mutableStateOf(false) }
     var isFabVisible by remember { mutableStateOf(true) }
     val pullRefreshState = rememberPullRefreshState(
@@ -69,6 +78,7 @@ fun MainScreen(
         pullRefreshState = pullRefreshState,
         players = players,
         lazyColumnState = lazyColumnState,
+        showDialog = showDialog,
         placeHolderDrawableRes = placeHolderDrawableRes,
         isRefreshing = isRefreshing,
         isFabVisible = isFabVisible,
@@ -83,13 +93,14 @@ fun MainScreen(
     LaunchedEffect(firstVisibleItemIndex) { isFabVisible = firstVisibleItemIndex >= 3 }
 }
 
+@ExperimentalFoundationApi
 @Composable
-@Preview(
+/*@Preview(
     showSystemUi = true,
     device = "id:pixel_6a",
     group = "MainScreenPreview",
     name = "EmptyList"
-)
+)*/
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @ExperimentalMaterialApi
@@ -97,17 +108,27 @@ fun MainScreenPreview1() {
     MaterialTheme {
         MainScreen(
             modifier = Modifier.fillMaxSize(),
-            players = listOf()
+            players = listOf(),
+            coroutineScope = rememberCoroutineScope(),
+            scaffoldState = rememberScaffoldState(),
+            lazyColumnState = rememberLazyListState(),
+            textFieldValue = remember {
+                mutableStateOf(
+                    TextFieldValue("")
+                )
+            },
+            showDialog = false,
         )
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
 @Preview(
     showSystemUi = true,
     device = "id:pixel_6a",
     group = "MainScreenPreview",
-    name = "NotEmptyList"
+    name = "NotEmptyList",
 )
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
@@ -194,7 +215,16 @@ fun MainScreenPreview2() {
     MaterialTheme {
         MainScreen(
             modifier = Modifier.fillMaxSize(),
-            players = players
+            players = players,
+            coroutineScope = rememberCoroutineScope(),
+            scaffoldState = rememberScaffoldState(),
+            lazyColumnState = rememberLazyListState(),
+            textFieldValue = remember {
+                mutableStateOf(
+                    TextFieldValue("")
+                )
+            },
+            showDialog = false,
         )
     }
 }

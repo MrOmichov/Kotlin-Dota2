@@ -57,6 +57,7 @@ internal fun PlayerCard(
             color = MaterialTheme.colorScheme.outlineVariant
         ),
         onClick = { onClick("") },
+
     ) {
         Row(
             modifier = Modifier

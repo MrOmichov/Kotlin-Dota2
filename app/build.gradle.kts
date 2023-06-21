@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.dota2"
-    compileSdk = 33
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "com.example.dota2"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 31
         versionCode = 1
         versionName = "1.0"
 

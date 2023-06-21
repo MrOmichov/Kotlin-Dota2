@@ -1,5 +1,6 @@
 package com.example.screens.main.impl.components
 
+import android.app.Dialog
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -13,6 +14,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -55,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import com.example.impl.R
 import com.example.screens.main.api.data.Player
 
+@ExperimentalFoundationApi
 @ExperimentalLayoutApi
 @ExperimentalMaterialApi
 @ExperimentalMaterial3Api
@@ -66,6 +69,7 @@ internal fun MainScreenContent(
     pullRefreshState: PullRefreshState,
     players: List<Player>,
     lazyColumnState: LazyListState,
+    showDialog: Boolean,
     @DrawableRes
     placeHolderDrawableRes: Int,
     isRefreshing: Boolean,
@@ -119,11 +123,18 @@ internal fun MainScreenContent(
                     .pullRefresh(pullRefreshState)
             ) {
                 if (players.isNotEmpty()) {
-                    PlayersList(
-                        lazyColumnState = lazyColumnState,
-                        players = players,
-                        placeHolderDrawableRes = placeHolderDrawableRes
-                    )
+                        PlayersList(
+                            lazyColumnState = lazyColumnState,
+                            players = players,
+                            placeHolderDrawableRes = placeHolderDrawableRes,
+                            showDialog = showDialog,
+                        )
+                        PlayersList(
+                            lazyColumnState = lazyColumnState,
+                            players = players,
+                            placeHolderDrawableRes = placeHolderDrawableRes,
+                            showDialog = showDialog,
+                        )
                 } else {
                     EmptyListPlaceholder(
                         modifier = Modifier.fillMaxSize(),
